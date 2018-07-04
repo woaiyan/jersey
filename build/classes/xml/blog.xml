@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+    <!--这块等于dao接口的实现  namespace必须和接口的类路径一样-->  
+<mapper namespace="com.Blog">  
+
+
+    <resultMap id="blog" type="Blog">
+       <id property="id" column="id"></id>
+       <result property="name" column="name"></result>
+       <association property="article" javaType="Article">
+           <result property="a_name" column="a_name"></result>
+           <result property="author" column="author"></result>
+           <result property="age" column="age"></result>
+       </association>
+    </resultMap>
+    <!-- findById必须和接口中的方法名一样  返回一个User  就是刚才的别名  如果不弄别名要连类路径一起写 麻烦-->  
+    <select id="getBlog"  resultMap="blog">  
+        select  b.id,b.name,b.article,a.name as a_name,a.author,a.age from blog b left join articles a on b.article=a.name where b.id=#{id}   
+    </select>  
+</mapper>

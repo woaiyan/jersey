@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:task="http://www.springframework.org/schema/task" 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+		http://www.springframework.org/schema/task 
+		http://www.springframework.org/schema/task/spring-task-3.0.xsd
+		http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx-3.1.xsd">
+        
+    
+
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="user" value="root"> </property>
+		<property name="password" value="123456"></property>
+		<property name="driverClass" value="com.mysql.jdbc.Driver"></property>
+		<property name="jdbcUrl" value="jdbc:mysql://localhost:3306/db"></property>
+	</bean>	
+    <!-- 创建SqlSessionFactory，同时指定数据源-->  
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">   
+       <property name="dataSource" ref="dataSource" />   
+  <!-- 指定sqlMapConfig总配置文件，订制的environment在spring容器中不再生效-->  
+       <property  name="configLocation"  value="classpath:mybatis-config.xml"/>  
+
+   </bean>    
+   <bean id="sqlTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+      <constructor-arg index="0" ref="sqlSessionFactory" />
+   </bean> 
+   <bean name="StudentImpl" class="daoImpl.StudentImpl">
+       <property name="sqlSessionTemplate" ref="sqlTemplate"></property>
+   </bean>
+   <bean id="StudentService" class="serviceImpl.StudentSImpl">
+      <property name="StudentImpl" ref="StudentImpl"></property>
+   </bean>
+   <bean id="blogImpl" class="daoImpl.BlogImpl">
+       <property name="sqlSessionTemplate" ref="sqlTemplate"></property>
+   </bean>
+   <bean id="BlogSImpl" class="serviceImpl.BlogSImpl">
+        <property name="blogImpl" ref="blogImpl"></property>
+   </bean>
+        <context:component-scan base-package="bean,dao,daoImpl,test,rest"/>
+     <aop:aspectj-autoproxy></aop:aspectj-autoproxy>
+   
+</beans>
